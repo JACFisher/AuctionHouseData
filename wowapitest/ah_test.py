@@ -1,5 +1,3 @@
-# client : 9651ae306528449bb1a90dc58c285fcb
-# secret : sUlWdzTpoy6E1DgY8D5zB92xfzYtoRHK
 # bdf    :
 #   region    : us
 #   namespace : dynamic-us
