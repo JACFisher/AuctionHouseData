@@ -1,0 +1,15 @@
+{
+  "token_data":
+    {
+      "client_id": "9651ae306528449bb1a90dc58c285fcb",
+      "client_secret": "sUlWdzTpoy6E1DgY8D5zB92xfzYtoRHK",
+      "grant_type": "client_credentials"
+    },
+  "token_url": "https://us.battle.net/oauth/token",
+  "realm_id": "96",
+  "auction_url":
+    {
+      "first_half": "https://us.api.blizzard.com/data/wow/connected-realm/",
+      "second_half": "/auctions?namespace=dynamic-us&locale=en_US&access_token="
+    }
+}

@@ -19,30 +19,43 @@ import json
 
 class Testies(object):
 
-    client = "9651ae306528449bb1a90dc58c285fcb"
-    secret = "sUlWdzTpoy6E1DgY8D5zB92xfzYtoRHK"
-    data = {"client_id":client, "client_secret":secret, "grant_type":"client_credentials"}
-    token_url = "https://us.battle.net/oauth/token"
-    realm_id = 96
-    auction_url = "https://us.api.blizzard.com/data/wow/connected-realm/" \
-                  + str(realm_id) + "/auctions?namespace=dynamic-us&locale=en_US&access_token="
+    token = None;
+    config_json = None;
     filename = "help.txt"
 
     access_token = None
 
+    def load_config(self, config="config.json"):
+        with open(config, 'r') as openfile:
+            self.config_json = json.load(openfile)
+
+    def get_token(self):
+        if self.config_json is not None:
+            token_url = self.config_json["token_url"]
+            token_data = self.config_json["token_data"]
+            token_post = requests.post(token_url, token_data)
+            token_json = json.loads(token_post.text)
+            self.token = token_json["access_token"]
+        else:
+            pass
+
+    def fetch_data(self, url, data=""):
+        pass
+
     def main(self):
-        x = requests.post(self.token_url, self.data)
-        json_in = json.loads(x.text)
-        self.access_token=json_in["access_token"]
-        y = requests.get(self.auction_url + self.access_token)
-        json_in = json.loads(y.text)
-        auctions = json_in["auctions"]
+        self.load_config()
+        self.get_token()
+        print(self.token)
+        # x = requests.post(self.token_url, self.data)
+        # json_in = json.loads(x.text)
+        # self.access_token=json_in["access_token"]
+        # y = requests.get(self.auction_url + self.access_token)
+        # json_in = json.loads(y.text)
+        # auctions = json_in["auctions"]
         # keys = list(auctions.keys())
         # print(keys)
         # with open(self.filename, 'w') as wf:
         #    json.dump(auctions, wf, indent=4, sort_keys=True)
-
-
 
 
 if __name__ == "__main__":
