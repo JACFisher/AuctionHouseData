@@ -65,7 +65,7 @@ url_pieces = \
             }
     }
 error_codes = [404]  # expand this list
-log_filename = "data_retriever.log"
+log_filename = "auction_retriever.log"
 request_warning = "During {}, the following status code was received: {}"
 
 
