@@ -1,0 +1,12 @@
+{
+  "token_data":
+    {
+      "client_id": "yourtoken",
+      "client_secret": "yoursecret",
+      "grant_type": "client_credentials"
+    },
+  "region_url": "https://us.battle.net/",
+  "realm_id": [74, 96, 156, 1068, 1259, 1267, 1276, 1280, 1567],
+  "region": "us",
+  "locale": "en_US"
+}
