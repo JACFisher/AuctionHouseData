@@ -1,0 +1,5 @@
+sample.*.json
+data_retriever.log
+my_config.json
+.idea/
+venv
