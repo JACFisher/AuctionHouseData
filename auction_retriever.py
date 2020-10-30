@@ -50,7 +50,7 @@ log_filename = "data_retriever.log"
 request_warning = "During {}, the following status code was received: {}"
 
 
-class DataRetriever(object):
+class AuctionRetriever(object):
 
     def __init__(self, config_file="config.json", source="program process"):
         initialize_logger(source)
@@ -87,6 +87,7 @@ class DataRetriever(object):
     def fetch_ah_data(self) -> dict:
         # try each realm id in list of connected realms until we get one that doesn't error
         this_attempt = None
+        logging.info('###################### AUCTION ACCESS START ######################')
         logging.info("Reaching out to auction house api at: " + get_timestamp(human_readable=True))
         for realm_id in self.realm_id_list:
             ah_url = self.build_url(url_type="auction", data=realm_id)
@@ -100,9 +101,11 @@ class DataRetriever(object):
                 logging.info("Error code received: " + str(this_attempt.status_code))
         if this_attempt.status_code in error_codes:
             logging.warning(request_warning.format("auction data retrieval", str(this_attempt.status_code)))
-            return {} # return an empty dict if we never accepted data other than error codes
+            data = {}  # return an empty dict if we never accepted data other than error codes
         else:
-            return json.loads(this_attempt.text)
+            data = json.loads(this_attempt.text)
+        logging.info('####################### AUCTION ACCESS END #######################')
+        return data
 
     def merge_item_names(self, data):
         merged_data = {}
@@ -115,6 +118,7 @@ class DataRetriever(object):
 
     def fetch_item_name(self, item_id):
         item_url = self.build_url(url_type="item", data=item_id)
+        logging.info('###################### ITEM ACCESS START ######################')
         logging.info("Reaching out to item api at: " + get_timestamp(human_readable=True))
         this_item = requests.get(item_url)
         logging.info("Attempted call to: " + item_url)
@@ -122,10 +126,11 @@ class DataRetriever(object):
             item_data = json.loads(this_item.text)
             item_name = item_data["name"]
             logging.info("Name collected: " + item_name)
-            return item_name
         else:
             logging.WARNING("Received error code: " + str(this_item.status_code))
-            return "UNKNOWN"
+            item_name = "UNKNOWN"
+        logging.info('####################### ITEM ACCESS END #######################')
+        return item_name
 
     def build_url(self, url_type, data) -> str:
         url = api_url_by_region[self.region]
@@ -202,8 +207,8 @@ if __name__ == "__main__":
     else:
         filename = "my_config.json"
     if os.path.isfile(filename):
-        dr = DataRetriever(config_file=filename, source="main method")
-        cleaned_data = dr.gather_data()
+        ar = AuctionRetriever(config_file=filename, source="main method")
+        cleaned_data = ar.gather_data()
         # Reinsert the following line to add item names to each id
         # cleaned_data = self.merge_item_names(cleaned_data)
         # Be aware, in my testing the process went from under a minute to over an hour
