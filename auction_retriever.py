@@ -1,11 +1,30 @@
-# bdf    :
-#   region    : us
-#   namespace : dynamic-us
-#   locale    : en_US
-#   id        : 1280
-# alternate ids  :  74 96 156 1068 1259 1267 1276 1280 1567
+# ###########################################
 #
+#   Connects to the World of Warcraft auction house API, retrieves every auction for the server whose data
+#   is listed in the config file, then cleans and returns the data.
 #
+#   Data is returned in dict format, staying true to JSON standard used in API.  Format:
+#   {
+#       <item_id>:
+#           {
+#               "buyout" : <buyout_price>
+#               "quantity" : <quantity>
+#               "unit_price" : <unit_price>
+#           },
+#       <item_id>:
+#           {
+#               ...
+#           },
+#       ...
+#   }
+#
+#   Example can be found in the sample_data folder.
+#
+#   Note: this class contains methods to find each item name and append it to the aforementioned data.
+#   This is not advised!  Each name takes one individual call to the server, which both takes a substantial
+#   time investment and runs over the allotted calls for one client (slowing down the auction connections as well).
+#
+#############################################
 # TODO: do not search for the name each time!  do it ONCE per item, maybe later in process?
 
 import datetime
@@ -201,7 +220,7 @@ def get_timestamp(human_readable=False) -> str:
 
 if __name__ == "__main__":
     # In general, should not be called directly, main method exists only to demonstrate use
-    # accepts the filename as the first command line arg or defaults to config.json
+    # accepts the filename as the first command line arg or defaults to my_config.json
     if len(sys.argv) == 2:
         filename = sys.argv[1]
     else:
