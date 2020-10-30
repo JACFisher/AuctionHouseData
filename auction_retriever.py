@@ -116,6 +116,7 @@ class AuctionRetriever(object):
             merged_data.update({item_id: auction_data})
         return merged_data
 
+    # DEPRECIATED - USING WEB SCRAPING
     def fetch_item_name(self, item_id):
         item_url = self.build_url(url_type="item", data=item_id)
         logging.info('###################### ITEM ACCESS START ######################')
@@ -154,8 +155,7 @@ class AuctionRetriever(object):
             clean_data = clean_auction_data(auction_data)
             return clean_data
 
-    # This method is very slow - each name requires a get request!
-    # Recommended not to use this, rather gather data ONCE
+    # DEPRECIATED - USING WEB SCRAPING
     def merge_item_names(self, data):
         merged_data = {}
         for item_id in data.keys():
@@ -209,10 +209,6 @@ if __name__ == "__main__":
     if os.path.isfile(filename):
         ar = AuctionRetriever(config_file=filename, source="main method")
         cleaned_data = ar.gather_data()
-        # Reinsert the following line to add item names to each id
-        # cleaned_data = self.merge_item_names(cleaned_data)
-        # Be aware, in my testing the process went from under a minute to over an hour
-        # The final process will do this in a more efficient way
         data_outfile = "sample." + get_timestamp() + ".json"
         with open(data_outfile, 'w') as wf:
             json.dump(cleaned_data, wf, indent=4, sort_keys=True)
