@@ -37,17 +37,17 @@ import sys
 
 # global variables:
 
-token_url_by_region = \
+token_url_by_region: dict = \
     {
         "us": "https://us.battle.net/oauth/token",
         "eu": "https://eu.battle.net/oauth/token",
     }
-api_url_by_region = \
+api_url_by_region: dict = \
     {
         "us": "https://us.api.blizzard.com/data/wow/",
         "eu": "https://eu.api.blizzard.com/data/wow/",
     }
-url_pieces = \
+url_pieces: dict = \
     {
         "auction":
             {
@@ -64,9 +64,9 @@ url_pieces = \
                 "before_token": "&access_token="
             }
     }
-error_codes = [404]  # expand this list
-log_filename = "auction_retriever.log"
-request_warning = "During {}, the following status code was received: {}"
+error_codes: [str] = [404]  # expand this list
+log_filename: str = "auction_retriever.log"
+request_warning: str = "During {}, the following status code was received: {}"
 
 
 class AuctionRetriever(object):
