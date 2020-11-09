@@ -1,5 +1,6 @@
 ./sample*json
-data_retriever.log
+logs/*
+database/*
 my_config.json
 .idea/
 venv
