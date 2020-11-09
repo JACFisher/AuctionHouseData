@@ -41,29 +41,37 @@ class DatabaseGateway(object):
 
     def connect_to_db(self):
         try:
-            self.log.info('###################### DATABASE ACCESS START ######################')
-            path = os.path.join(os.path.dirname(__file__), 'database')
-            db = os.path.join(path, _db_name)
+            time = "TIME: " + get_timestamp()
+            filepath = os.path.join(os.path.dirname(__file__), "database")
+            db = os.path.join(filepath, _db_name)
             db = os.path.normpath(db)
+            if not os.path.exists(filepath):
+                os.makedirs(filepath)
             self.conn = sqlite3.connect(db)
             self.cursor = self.conn.cursor()
+            self.log.info("###################### DATABASE ACCESS START ######################")
+            self.log.info(time)
         except Exception as e:
-            self.log.ERROR("FAILED TO CONNECT TO DATABASE")
-            self.log.ERROR(e)
+            self.log.error("FAILED TO CONNECT TO DATABASE: " + db)
+            self.log.error(time)
+            self.log.error("Exception: " + str(e))
 
     def close_connection(self):
-        self.log.info('####################### DATABASE ACCESS END #######################')
-        self.conn.close()
+        time = "TIME: " + get_timestamp()
+        if self.conn is None or self.cursor is None:
+            self.log.warning("Attempted to close an unopen connection at: " +
+                             time)
+        else:
+            self.log.info(time)
+            self.log.info("####################### DATABASE ACCESS END #######################")
+            self.conn.close()
 
     def create_tables(self):
         if self.conn is None or self.cursor is None:
-            self.log.WARNING("Attempted to create tables without a connection at: " +
+            self.log.warning("Attempted to create tables without a connection at: " +
                              get_timestamp(human_readable=True))
         else:
             create = "CREATE TABLE IF NOT EXISTS"
-            weekly_table = "weekly_listings_" + get_year_week()
-            daily_table = "daily_listings_" + get_year_day()
-            table_names = ['item_names', ]
 
 
 if __name__ == '__main__':

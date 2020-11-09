@@ -46,9 +46,11 @@ def initialize_logger(log_type="undefined") -> logging:
     if not os.path.exists(filepath):
         os.makedirs(filepath)
     filename = os.path.join(filepath, today_log)
-    logging.basicConfig(filename=filename, encoding='utf-8', level=logging.DEBUG)
-    logging.info('**************************************************')
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+    new_handler = logging.FileHandler(filename, 'w', 'utf-8')
+    logger.addHandler(new_handler)
+    logger.info('**************************************************')
     time = get_timestamp(human_readable=True)
-    logging.info("Process started at: " + time)
-    return logging
-
+    logger.info("Process started at: " + time)
+    return logger
