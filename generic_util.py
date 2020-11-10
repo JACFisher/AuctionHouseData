@@ -1,13 +1,12 @@
 import datetime
 import logging
 import os.path
-import sys
 
 _log_folder: str = "logs"
 
 
 def get_week() -> str:
-    cur_week = datetime.datetime.now().timetuple().strftime("%U")
+    cur_week = datetime.datetime.now().strftime("%U")
     return str(cur_week)
 
 
@@ -40,7 +39,7 @@ def get_timestamp(human_readable=True) -> str:
         return str(cur_time)
 
 
-def initialize_logger(log_type="undefined"):
+def initialize_logger(log_type="undefined") -> logging:
     day = get_year_day()
     today_log = day + "_" + log_type + ".log"
     filepath = os.path.join(os.path.dirname(__file__), _log_folder, log_type)
