@@ -39,6 +39,11 @@ def get_timestamp(human_readable=True) -> str:
         return str(cur_time)
 
 
+def get_hour() -> str:
+    cur_hour = datetime.datetime.now().hour
+    return str(cur_hour)
+
+
 def initialize_logger(log_type="undefined") -> logging:
     day = get_year_day()
     today_log = day + "_" + log_type + ".log"
