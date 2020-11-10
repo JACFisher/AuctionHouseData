@@ -8,22 +8,21 @@ import sqlite3
 from generic_util import get_year_day, get_year_week, get_timestamp, initialize_logger
 import os
 
-
 _db_name = "ah_database.db"
 _log_filename: str = "db_gateway.log"
 _tables: dict = {
-    "weekly_table": {
-        "name": "weekly_listings_" + get_year_week(),
-        "columns": ["[sunday] text", "[monday] text", "[tuesday] text",
-                    "[wednesday] PRIMARY KEY", "[thursday] PRIMARY KEY", "[friday] PRIMARY KEY",
-                    "[saturday] PRIMARY KEY"]
-    },
-    "daily_table": {
-        "name": "daily_listings_" + get_year_day(),
-        "columns": ["item_id FOREIGN KEY"].append("{}".format(x) for x in range(0, 24))
-    },
-    "table_names": ['item_names']
+        "sales_table": {
+            "name": "daily_listings",
+            "columns": ["[item_id] INTEGER PRIMARY KEY", "[year] INTEGER NOT NULL", "[day_in_year] INTEGER NOT NULL"]
+        },
+        "table_names": {
+            "name": "item_names",
+            "columns": ["[ite8m_id] INTEGER FOREIGN KEY", "[item_name] TEXT DEFAULT 'UNDEFINED'"]
+        }
 }
+for x in range(0,24):
+    _tables["sales_table"]["columns"].append("[sales_at_hour_{}] INTEGER DEFAULT -1".format(x))
+
 
 class DatabaseGateway(object):
 
@@ -45,6 +44,7 @@ class DatabaseGateway(object):
             self.log.info('###################### DATABASE ACCESS START ######################')
             path = os.path.join(os.path.dirname(__file__), 'database')
             db = os.path.join(path, _db_name)
+            db = os.path.normpath(db)
             self.conn = sqlite3.connect(db)
             self.cursor = self.conn.cursor()
         except Exception as e:
@@ -65,25 +65,8 @@ class DatabaseGateway(object):
             daily_table = "daily_listings_" + get_year_day()
             table_names = ['item_names', ]
 
-    # Probably useless if using CREATE TABLE IF NOT EXISTS
-
-    def check_exists(self, table) -> bool:
-        try:
-            statement = "SELECT name FROM sqlite_master WHERE type = 'table' AND name = '{}';".format(table)
-            self.cursor.execute(statement)
-            if len(self.cursor.fetchall()) == 0:
-                return False
-            else:
-                return True
-        except Exception as e:
-            self.log.ERROR("ERROR OCCURRED WHILE EXECUTING STATEMENT:")
-            self.log.ERROR(statement)
-            self.log.ERROR(e)
-            return False
-
 
 if __name__ == '__main__':
     dg = DatabaseGateway()
     dg.connect_to_db()
-    print(str(dg.check_exists("hallo")))
     dg.close_connection()
