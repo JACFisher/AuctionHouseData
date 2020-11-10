@@ -48,7 +48,7 @@ def initialize_logger(log_type="undefined") -> logging:
     filename = os.path.join(filepath, today_log)
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
-    new_handler = logging.FileHandler(filename, 'w', 'utf-8')
+    new_handler = logging.FileHandler(filename, mode='a', encoding='utf-8')
     logger.addHandler(new_handler)
     logger.info('**************************************************')
     time = get_timestamp(human_readable=True)
