@@ -34,7 +34,6 @@ import os.path
 import sys
 
 # global variables:
-
 _token_url_by_region: dict = \
     {
         "us": "https://us.battle.net/oauth/token",
@@ -132,7 +131,7 @@ class APIGateway(object):
         else:
             item_url = self.build_url(url_type="item", data=item_id)
             self.log.info('###################### ITEM ACCESS START ######################')
-            self.log.info("Reaching out to item api at: " + get_timestamp(human_readable=True))
+            self.log.info("Reaching out to item api at: " + gu.get_timestamp(human_readable=True))
             this_item = requests.get(item_url)
             self.log.info("Attempted call to: " + item_url)
             if this_item.status_code not in _error_codes:
@@ -194,18 +193,21 @@ def clean_auction_data(auction_data) -> dict:
 
 
 if __name__ == "__main__":
-    # Write to the auction_sample_data directory
+    # Writes to the auction_sample_data directory found in the data directory
     # This is where the main for database_gateway.py checks for data
     # Recreates the directory if missing
-    config_filename = "my_config.json"
+    config_filepath = os.path.join(os.path.dirname(__file__), "data", "config")
+    config_filename = os.path.join(config_filepath, "my_config.json")
+    sample_data_folder = os.path.join(os.path.dirname(__file__), "data", "auction_sample_data")
+    if not os.path.exists(sample_data_folder):
+        os.makedirs(sample_data_folder)
+    if not os.path.exists(config_filepath):
+        os.makedirs(config_filepath)
     if os.path.isfile(config_filename):
         ag = APIGateway(config_file=config_filename)
         cleaned_data = ag.gather_clean_data()
-        out_folder = os.path.join(os.path.dirname(__file__), "auction_sample_data")
-        if not os.path.exists(out_folder):
-            os.makedirs(out_folder)
         data_outfile = "sample." + gu.get_timestamp(human_readable=False) + ".json"
-        data_filename = os.path.join(out_folder, data_outfile)
+        data_filename = os.path.join(sample_data_folder, data_outfile)
         data_filename = os.path.normpath(data_filename)
         with open(data_filename, 'w') as wf:
             json.dump(cleaned_data, wf, indent=4, sort_keys=True)

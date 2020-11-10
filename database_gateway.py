@@ -29,6 +29,7 @@ import os
 # remove after testing:
 import json
 
+# global variables:
 _db_name = "ah_database.db"
 _log_filename: str = "db_gateway.log"
 _listings = "weekly_listings_{}".format(gu.get_week())
@@ -177,18 +178,17 @@ def load_sample_file():
     # If for some reason there's nothing there, we do create a small fake dataset
     # FWIW, I have been using DB Browser (SQLite) to view data during testing,
     # and I have found it more than adequate if you wanted a suggestion!
-    filepath = os.path.join(os.path.dirname(__file__), "auction_sample_data")
-    if os.path.exists(filepath):
-        files = os.listdir(filepath)
+    sample_data_folder = os.path.join(os.path.dirname(__file__), "data", "auction_sample_data")
+    if os.path.exists(sample_data_folder):
+        files = os.listdir(sample_data_folder)
     else:
-        files = []
+        os.makedirs(sample_data_folder)
     if len(files) > 0 and ".json" in files[0]:
-        filename = os.path.join(filepath, files[0])
+        filename = os.path.join(sample_data_folder, files[0])
         filename = os.path.normpath(filename)
         with open(filename, 'r') as rf:
             sales_data = json.load(rf)
             rf.close()
-        return sales_data
     else:
         fake_data = {
             "32": {
@@ -200,7 +200,11 @@ def load_sample_file():
                 "unit_price": 10534
             }
         }
-        return fake_data
+        fake_json = os.path.join(sample_data_folder, "fake_data.json")
+        with open(fake_json, 'w') as wf:
+            json.dump(fake_data, wf, indent=4, sort_keys=True)
+            wf.close()
+
 
 
 if __name__ == '__main__':

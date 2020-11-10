@@ -8,7 +8,7 @@ import datetime
 import logging
 import os.path
 
-_log_folder: str = "logs"
+_log_folder: str = os.path.join(os.path.dirname(__file__), "data")
 
 
 def get_week() -> str:
@@ -53,7 +53,7 @@ def get_hour() -> str:
 def initialize_logger(log_type="undefined") -> logging:
     day = get_year_day()
     today_log = day + "_" + log_type + ".log"
-    filepath = os.path.join(os.path.dirname(__file__), _log_folder, log_type)
+    filepath = os.path.join(_log_folder, log_type)
     if not os.path.exists(filepath):
         os.makedirs(filepath)
     filename = os.path.join(filepath, today_log)
