@@ -1,4 +1,5 @@
-#############################################
+#######################################################################################################################
+#
 #   Connects to the World of Warcraft API, providing two functions:
 #       First: retrieve the name of an item given its item id.
 #       Second:
@@ -20,12 +21,14 @@
 #       ...
 #   }
 #
-#   Example config file can be found in the sample_data folder.
-#############################################
+#   Requires a config file.  An example config file can be found in the sample_data folder, and more information
+#   is available in the README.
+#
+#######################################################################################################################
 
 import json
 import requests
-from generic_util import get_timestamp, initialize_logger
+import generic_util as gu
 # the following are only used in main :|
 import os.path
 import sys
@@ -67,7 +70,7 @@ _request_warning: str = "During {}, the following status code was received: {}"
 class APIGateway(object):
 
     def __init__(self, config_file="config.json"):
-        self.log = initialize_logger("api_gateway")
+        self.log = gu.initialize_logger("api_gateway")
         # the following block is handled with load_config:
         self.region = None
         self.token_data = None
@@ -102,7 +105,7 @@ class APIGateway(object):
         # try each realm id in list of connected realms until we get one that doesn't error
         this_attempt = None
         self.log.info('###################### AUCTION ACCESS START ######################')
-        self.log.info("Reaching out to auction house api at: " + get_timestamp(human_readable=True))
+        self.log.info("TIME: " + gu.get_timestamp(human_readable=True))
         for realm_id in self.realm_id_list:
             ah_url = self.build_url(url_type="auction", data=realm_id)
             this_attempt = requests.get(ah_url)
@@ -118,6 +121,7 @@ class APIGateway(object):
             data = {}  # return an empty dict if we never accepted data other than error codes
         else:
             data = json.loads(this_attempt.text)
+        self.log.info("TIME: " + gu.get_timestamp(human_readable=True))
         self.log.info('####################### AUCTION ACCESS END #######################')
         return data
 
@@ -155,7 +159,7 @@ class APIGateway(object):
 
     def gather_clean_data(self) -> dict:
         if self.token_data is None:
-            self.log.WARNING("Attempted to gather data without a token at: " + get_timestamp(human_readable=True))
+            self.log.WARNING("Attempted to gather data without a token at: " + gu.get_timestamp(human_readable=True))
             return {}
         else:
             self.fetch_token()
@@ -179,19 +183,30 @@ def clean_auction_data(auction_data) -> dict:
         clean_data.update({item_id: temp_dict})
     return clean_data
 
+#######################################################################################################################
+#
+#   The following exists for demonstration purposes only.
+#   The true main entry point for this program is located in __main__.py
+#   Relies on a file named "my_config.json" - a sample is available in the sample_config directory.
+#   More information on the expected config can be found in the README
+#
+#######################################################################################################################
+
 
 if __name__ == "__main__":
-    # In general, should not be called directly, main method exists only to demonstrate use
-    # accepts the filename as the first command line arg or defaults to my_config.json
-    if len(sys.argv) == 2:
-        filename = sys.argv[1]
-    else:
-        filename = "my_config.json"
-    if os.path.isfile(filename):
-        ag = APIGateway(config_file=filename)
+    # Write to the auction_sample_data directory
+    # This is where the main for database_gateway.py checks for data
+    # Recreates the directory if missing
+    config_filename = "my_config.json"
+    if os.path.isfile(config_filename):
+        ag = APIGateway(config_file=config_filename)
         cleaned_data = ag.gather_clean_data()
-        data_outfile = "sample." + get_timestamp(human_readable=False) + ".json"
-        with open(data_outfile, 'w') as wf:
+        out_folder = os.path.join(os.path.dirname(__file__), "auction_sample_data")
+        if not os.path.exists(out_folder):
+            os.makedirs(out_folder)
+        data_outfile = "sample." + gu.get_timestamp(human_readable=False) + ".json"
+        data_filename = os.path.join(out_folder, data_outfile)
+        data_filename = os.path.normpath(data_filename)
+        with open(data_filename, 'w') as wf:
             json.dump(cleaned_data, wf, indent=4, sort_keys=True)
             wf.close()
-
