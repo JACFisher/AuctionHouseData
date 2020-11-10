@@ -29,9 +29,7 @@
 import json
 import requests
 import generic_util as gu
-# the following are only used in main :|
-import os.path
-import sys
+import os
 
 # global variables:
 _token_url_by_region: dict = \
@@ -98,7 +96,7 @@ class APIGateway(object):
         token_post = requests.post(url, self.token_data)
         token_json = json.loads(token_post.text)
         self.token = token_json["access_token"]
-        self.log.info("Token received: " + self.token)
+        self.log.info("Token received!")
 
     def fetch_ah_data(self) -> dict:
         # try each realm id in list of connected realms until we get one that doesn't error
