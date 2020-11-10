@@ -1,3 +1,9 @@
+#######################################################################################################################
+#
+#   Utility functions used by other modules in this package.  Predominantly datetime methods and logging.
+#
+#######################################################################################################################
+
 import datetime
 import logging
 import os.path
