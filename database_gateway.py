@@ -206,7 +206,6 @@ def load_sample_file():
             wf.close()
 
 
-
 if __name__ == '__main__':
     dg = DatabaseGateway()
     dg.connect_to_db()

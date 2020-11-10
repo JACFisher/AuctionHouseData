@@ -8,7 +8,7 @@ import datetime
 import logging
 import os.path
 
-_log_folder: str = os.path.join(os.path.dirname(__file__), "data")
+_log_folder: str = os.path.join(os.path.dirname(__file__), "data", "logs")
 
 
 def get_week() -> str:
