@@ -1,0 +1,18 @@
+**************************************************
+Process started at: 2020-11-10T16:39:17.301002
+Starting new HTTPS connection (1): us.battle.net:443
+https://us.battle.net:443 "POST /oauth/token HTTP/1.1" 200 None
+Token received: USVKwMMHmM05Kofhkhux3oOQJZ6DiKkfgg
+###################### AUCTION ACCESS START ######################
+TIME: 2020-11-10T16:39:17.731393
+Starting new HTTPS connection (1): us.api.blizzard.com:443
+https://us.api.blizzard.com:443 "GET /data/wow/connected-realm/74/auctions?namespace=dynamic-us&locale=en_US&access_token=USVKwMMHmM05Kofhkhux3oOQJZ6DiKkfgg HTTP/1.1" 404 None
+Attempted call to: https://us.api.blizzard.com/data/wow/connected-realm/74/auctions?namespace=dynamic-us&locale=en_US&access_token=USVKwMMHmM05Kofhkhux3oOQJZ6DiKkfgg
+Error code received: 404
+Starting new HTTPS connection (1): us.api.blizzard.com:443
+https://us.api.blizzard.com:443 "GET /data/wow/connected-realm/96/auctions?namespace=dynamic-us&locale=en_US&access_token=USVKwMMHmM05Kofhkhux3oOQJZ6DiKkfgg HTTP/1.1" 200 None
+Attempted call to: https://us.api.blizzard.com/data/wow/connected-realm/96/auctions?namespace=dynamic-us&locale=en_US&access_token=USVKwMMHmM05Kofhkhux3oOQJZ6DiKkfgg
+Realm ID 96 returned a valid code: 200
+TIME: 2020-11-10T16:39:19.581528
+####################### AUCTION ACCESS END #######################
+Writing to file: C:\Users\Daddy\PycharmProjects\AuctionHouseData\data\auction_sample_data\sample.1605044359.76404.json
