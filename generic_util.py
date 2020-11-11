@@ -50,10 +50,10 @@ def get_hour() -> str:
     return str(cur_hour)
 
 
-def initialize_logger(log_type="undefined") -> logging:
+def initialize_logger(process_name: str = "unspecified") -> logging:
     day = get_year_day()
-    today_log = day + "_" + log_type + ".log"
-    filepath = os.path.join(_log_folder, log_type)
+    today_log = "log_" + day + ".log"
+    filepath = os.path.join(_log_folder)
     if not os.path.exists(filepath):
         os.makedirs(filepath)
     filename = os.path.join(filepath, today_log)
@@ -63,5 +63,5 @@ def initialize_logger(log_type="undefined") -> logging:
     logger.addHandler(new_handler)
     logger.info('**************************************************')
     time = get_timestamp(human_readable=True)
-    logger.info("Process started at: " + time)
+    logger.info("Process ({}) started at: {}".format(process_name, time))
     return logger

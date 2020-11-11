@@ -30,12 +30,14 @@ import os
 import json
 
 # global variables:
-_db_name = "ah_database.db"
-_log_filename: str = "db_gateway.log"
-_listings = "weekly_listings_{}".format(gu.get_week())
-_item_names = "item_names"
-_sales_hour = "price_at_hour_"
-_tables: dict = {
+_db_path: str = os.path.join(os.path.dirname(__file__), "data", "database")
+_db_name: str = "ah_database.db"
+_log_filename: str = "db_gateway"
+_listings: str = "weekly_listings_{}".format(gu.get_week())
+_item_names: str = "item_names"
+_sales_hour: str = "price_at_hour_"
+_tables: dict = \
+    {
         _listings: {
             "name": _listings,
             "columns": ["item_id INTEGER PRIMARY KEY", "year INTEGER NOT NULL", "day_in_year INTEGER NOT NULL"],
@@ -55,7 +57,7 @@ class DatabaseGateway(object):
 
     def __init__(self):
         self.today = gu.get_year_day()
-        self.log = gu.initialize_logger("db_gateway")
+        self.log = gu.initialize_logger("database_gateway.py")
         self.conn = None  # database connection
         self.cursor = None  # sqlite cursor
 
@@ -73,11 +75,10 @@ class DatabaseGateway(object):
     def connect_to_db(self):
         try:
             time = "TIME: " + gu.get_timestamp()
-            filepath = os.path.join(os.path.dirname(__file__), "database")
-            db = os.path.join(filepath, _db_name)
+            if not os.path.exists(_db_path):
+                os.makedirs(_db_path)
+            db = os.path.join(_db_path, _db_name)
             db = os.path.normpath(db)
-            if not os.path.exists(filepath):
-                os.makedirs(filepath)
             self.conn = sqlite3.connect(db)
             self.cursor = self.conn.cursor()
             self.log.info("###################### DATABASE ACCESS START ######################")
@@ -164,6 +165,7 @@ class DatabaseGateway(object):
                         str(item_id), year, day)
                     self.execute_statement(statement)
 
+
 #######################################################################################################################
 #
 #   The following exists for demonstration purposes only.
@@ -179,18 +181,17 @@ def load_sample_file():
     # FWIW, I have been using DB Browser (SQLite) to view data during testing,
     # and I have found it more than adequate if you wanted a suggestion!
     sample_data_folder = os.path.join(os.path.dirname(__file__), "data", "auction_sample_data")
+    files = []
     if os.path.exists(sample_data_folder):
         files = os.listdir(sample_data_folder)
-    else:
-        os.makedirs(sample_data_folder)
     if len(files) > 0 and ".json" in files[0]:
         filename = os.path.join(sample_data_folder, files[0])
         filename = os.path.normpath(filename)
         with open(filename, 'r') as rf:
             sales_data = json.load(rf)
             rf.close()
-    else:
-        fake_data = {
+    else:  # if there is no sample data, create some fake data :)
+        sales_data = {
             "32": {
                 "buyout": 1337,
                 "unit_price": "NONE"
@@ -200,10 +201,7 @@ def load_sample_file():
                 "unit_price": 10534
             }
         }
-        fake_json = os.path.join(sample_data_folder, "fake_data.json")
-        with open(fake_json, 'w') as wf:
-            json.dump(fake_data, wf, indent=4, sort_keys=True)
-            wf.close()
+    return sales_data
 
 
 if __name__ == '__main__':
