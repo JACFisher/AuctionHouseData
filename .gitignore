@@ -2,6 +2,6 @@ __pycache__
 data/logs/*
 data/config/my_config.json
 data/auction_sample_data/sample*.json
-data/database/ah_database.db
+data/database
 .idea/
 venv
