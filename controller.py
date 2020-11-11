@@ -1,15 +1,20 @@
 from api_gateway import APIGateway
 from database_gateway import DatabaseGateway
+import generic_util as gu
 import os
+
 
 class Controller(object):
 
     def __init__(self, api_config="config.json"):
-        self.ag = APIGateway(api_config)
-        self.dg = DatabaseGateway()
+        self.log = gu.initialize_logger("controller.py")
+        self.ag = APIGateway(api_config, self.log)
+        self.dg = DatabaseGateway(self.log)
 
     def collect_and_store_data(self):
+        self.log.info("Module (controller.py) using (api_gateway.py)")
         data = self.ag.gather_clean_data()
+        self.log.info("Module (controller.py) using (database_gateway.py)")
         self.dg.connect_to_db()
         self.dg.create_tables()
         self.dg.add_auction_data(data)

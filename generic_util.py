@@ -64,4 +64,5 @@ def initialize_logger(process_name: str = "unspecified") -> logging:
     logger.info('**************************************************')
     time = get_timestamp(human_readable=True)
     logger.info("Process ({}) started at: {}".format(process_name, time))
+    logger.info('**************************************************')
     return logger

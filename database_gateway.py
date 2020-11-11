@@ -55,9 +55,12 @@ for x in range(0,24):
 
 class DatabaseGateway(object):
 
-    def __init__(self):
+    def __init__(self, logger=None):
+        if logger is not None:
+            self.log = logger
+        else:
+            self.log = gu.initialize_logger("database_gateway.py")
         self.today = gu.get_year_day()
-        self.log = gu.initialize_logger("database_gateway.py")
         self.conn = None  # database connection
         self.cursor = None  # sqlite cursor
 
@@ -144,7 +147,7 @@ class DatabaseGateway(object):
                 if len(self.cursor.fetchall()) < 1:
                     statement = "INSERT INTO {} (item_id) VALUES ({})".format(
                         _tables[_item_names]["name"], str(item_id))
-                    self.execute_statement(statement, log_statement=True)
+                    self.execute_statement(statement)
 
     def check_listing_table(self, item_id: int, sales: int):
         if self.check_connection("access " + _listings):

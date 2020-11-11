@@ -65,8 +65,11 @@ _log_filename: str = "api_gateway"
 
 class APIGateway(object):
 
-    def __init__(self, config_file="config.json"):
-        self.log = gu.initialize_logger("api_gateway.py")
+    def __init__(self, config_file="config.json", logger=None):
+        if logger is not None:
+            self.log = logger
+        else:
+            self.log = gu.initialize_logger("api_gateway.py")
         # the following block is handled with load_config:
         self.region = None
         self.token_data = None
@@ -96,7 +99,6 @@ class APIGateway(object):
         token_json = json.loads(token_post.text)
         self.token = token_json["access_token"]
         self.log.info("Token received!")
-
 
     def fetch_ah_data(self) -> dict:
         # try each realm id in list of connected realms until we get one that doesn't error
