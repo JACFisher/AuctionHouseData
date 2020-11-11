@@ -126,7 +126,7 @@ class APIGateway(object):
         self.log.info('####################### AUCTION ACCESS END #######################')
         return data
 
-    def fetch_item_name(self, item_id):
+    def fetch_item_data(self, item_id) -> dict:
         if not self.check_token_status("gather item names"):
             return {}
         else:
@@ -139,12 +139,17 @@ class APIGateway(object):
             if this_item.status_code not in _error_codes:
                 item_data = json.loads(this_item.text)
                 item_name = item_data["name"]
+                item_quality = item_data["quality"]["type"]
                 self.log.info("Name collected: " + item_name)
             else:
                 self.log.warning("Received error code: " + str(this_item.status_code))
                 item_name = "UNKNOWN"
             self.log.info('####################### ITEM ACCESS END #######################')
-            return item_name
+            useful_item_data = {
+                "name": item_name,
+                "quality": item_quality
+            }
+            return useful_item_data
 
     def build_url(self, url_type, data) -> str:
         url = _api_url_by_region[self.region]

@@ -45,7 +45,8 @@ _tables: dict = \
         },
         _item_names: {
             "name": _item_names,
-            "columns": ["item_id INTEGER", "item_name TEXT DEFAULT 'UNDEFINED'"],
+            "columns": ["item_id INTEGER", "item_name TEXT DEFAULT 'UNDEFINED'",
+                        "item_quality TEXT DEFAULT 'UNDEFINED'"],
             "constraints": ["CONSTRAINT item_id FOREIGN KEY (item_id) REFERENCES listings (item_id)"]
         }
 }
@@ -119,7 +120,8 @@ class DatabaseGateway(object):
     def check_connection(self, message: str) -> bool:
         if self.conn is None or self.cursor is None:
             self.log.warning("Attempted to {} without a connection at {}.".format(
-                            message, gu.get_timestamp(human_readable=True)))
+                            message, gu.get_timestamp(human_readable=True))
+            )
             return False
         return True
 
@@ -142,11 +144,13 @@ class DatabaseGateway(object):
     def check_item_table(self, item_id: int):
         if self.check_connection("access " + _item_names):
             statement = "SELECT * FROM {} WHERE item_id={}".format(
-                _tables[_item_names]["name"], str(item_id))
+                _tables[_item_names]["name"], str(item_id)
+            )
             if self.execute_statement(statement):
                 if len(self.cursor.fetchall()) < 1:
                     statement = "INSERT INTO {} (item_id) VALUES ({})".format(
-                        _tables[_item_names]["name"], str(item_id))
+                        _tables[_item_names]["name"], str(item_id)
+                    )
                     self.execute_statement(statement)
 
     def check_listing_table(self, item_id: int, sales: int):
@@ -155,18 +159,38 @@ class DatabaseGateway(object):
             day = gu.get_day()
             hour = gu.get_hour()
             statement = "SELECT * FROM {} WHERE item_id={} AND year={} AND day_in_year={}".format(
-                _tables[_listings]["name"], str(item_id), year, day)
+                _tables[_listings]["name"], str(item_id), year, day
+            )
             if self.execute_statement(statement):
                 if len(self.cursor.fetchall()) < 1:
                     statement = "INSERT INTO {} (item_id, year, day_in_year, {}{}) VALUES ({}, {}, {}, {})".format(
                         _tables[_listings]["name"], _sales_hour, hour,
-                        str(item_id), year, day, str(sales))
+                        str(item_id), year, day, str(sales)
+                    )
                     self.execute_statement(statement)
                 else:
                     statement = "UPDATE {} SET {}{} = {} WHERE item_id={} AND year={} AND day_in_year={}".format(
-                        _tables[_listings]["name"], _sales_hour, hour, str(sales),
-                        str(item_id), year, day)
+                        _listings, _sales_hour, hour, str(sales),
+                        str(item_id), year, day
+                    )
                     self.execute_statement(statement)
+
+    def start_connection(self):
+        self.connect_to_db()
+        self.create_tables()
+
+    def find_items_missing_data(self, limit=5):
+        statement = "SELECT * FROM {} WHERE item_name={} OR item_quality={} LIMIT {}".format(
+            _item_names, "'UNDEFINED'", "'UNDEFINED'", limit
+        )
+        self.execute_statement(statement, log_statement=True)
+        return self.cursor.fetchall()
+
+    def update_item_data(self, item_id: int, item_name: str, item_quality: str):
+        statement = "UPDATE {} SET item_name = '{}', item_quality = '{}' WHERE item_id = {}".format(
+            _item_names, item_name, item_quality, str(item_id)
+        )
+        self.execute_statement(statement)
 
 
 #######################################################################################################################
