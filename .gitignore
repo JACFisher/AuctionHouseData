@@ -1,7 +1,7 @@
 __pycache__
 data/logs/*
 data/config/my_config.json
-data/sample_data/sample*.json
+data/auction_sample_data/sample*.json
 data/database/*
 .idea/
 venv
