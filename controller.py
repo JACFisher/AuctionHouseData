@@ -1,3 +1,13 @@
+#######################################################################################################################
+#
+#   Handles interactions between the api and database gateways.  Collects current auction data,
+#   stores it in the database, then checks n items in database for missing data and attempts to
+#   fill them.  Currently fixes 100 entries per hour, if run hourly 2400 per day, resulting in
+#   a full item database in approximately a week.  While this could be done all at once, the
+#   process would take hours and valuable auction data would be missed.
+#
+#######################################################################################################################
+
 from api_gateway import APIGateway
 from database_gateway import DatabaseGateway
 import generic_util as gu
@@ -31,10 +41,7 @@ class Controller(object):
             self.dg.update_item_data(item_id=item, item_name=item_data["name"], item_quality=item_data["quality"])
         self.dg.close_connection()
 
+    def main(self):
+        self.collect_and_store_data()
+        self.fix_unnamed_items()
 
-if __name__ == '__main__':
-    config_filepath = os.path.join(os.path.dirname(__file__), "data", "config")
-    config_file = os.path.join(config_filepath, "my_config.json")
-    con = Controller(config_file)
-    con.collect_and_store_data()
-    con.fix_unnamed_items()
